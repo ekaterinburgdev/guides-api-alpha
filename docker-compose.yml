@@ -1,0 +1,21 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  dotnet:
+    container_name: dotnet
+    build: ./EkaterinburgDesign.Guides.Api
+    ports:
+      - 8000:3228
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://*:3228
+
+  db:
+    container_name: db
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: guides
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    ports:
+      - 5432:5432
