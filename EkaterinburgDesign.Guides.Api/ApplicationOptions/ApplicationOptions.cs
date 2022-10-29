@@ -2,7 +2,5 @@
 
 public class ApplicationOptions
 {
-    public bool InContainer;
-
     public PostgresCredentials Postgres { get; set; } = default!;
 }
