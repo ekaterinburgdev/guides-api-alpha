@@ -1,21 +1,27 @@
 version: "3.9"  # optional since v1.27.0
+
+x-postgres-variables: &postgres-variables
+  POSTGRES_DB: ${DB_NAME:-guides}
+  POSTGRES_USER: ${DB_USER:-root}
+  POSTGRES_PASSWORD: ${DB_PASSWORD:-root}
+
 services:
   dotnet:
     container_name: dotnet
     build: ./EkaterinburgDesign.Guides.Api
     ports:
-      - 8000:3228
+      - ${APP_PORT:-8000}:80
     environment:
+      <<: *postgres-variables
+      DB_HOST: db
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://*:3228
+      # ASPNETCORE_URLS: http://*:3228
 
   db:
     container_name: db
     image: postgres
     restart: always
     environment:
-      POSTGRES_DB: guides
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
+      <<: *postgres-variables
     ports:
-      - 5432:5432
+      - ${DB_PORT:-5432}:5432
