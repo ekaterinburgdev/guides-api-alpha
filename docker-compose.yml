@@ -1,9 +1,9 @@
 version: "3.9"  # optional since v1.27.0
 
 x-db-variables: &db-variables
-  DB_NAME: ${DB_NAME:-guides}
-  DB_USER: ${DB_USER:-root}
-  DB_PASSWORD: ${DB_PASSWORD:-root}
+  POSTGRES_DB: ${DB_NAME:-guides}
+  POSTGRES_USER: ${DB_USER:-root}
+  POSTGRES_PASSWORD: ${DB_PASSWORD:-root}
 
 services:
   dotnet:
