@@ -5,9 +5,9 @@ EnvironmentVariablesConfigurator.LoadVariables();
 
 var builder = WebApplication.CreateBuilder(args);
 
-Configuration.ConfigureServices(builder.Services);
+Startup.ConfigureServices(builder.Services);
 
 var app = builder.Build();
-Configuration.ConfigureApplication(app);
+Startup.ConfigureApplication(app);
 
 app.Run();

@@ -3,7 +3,7 @@ using EkaterinburgDesign.Guides.Api.Integrations.Postgres;
 
 namespace EkaterinburgDesign.Guides.Api;
 
-public static class Configuration
+public static class Startup
 {
     public static void ConfigureServices(IServiceCollection services) =>
         services

@@ -13,5 +13,5 @@ public class PostgresCredentials
     public string Password { get; set; } = default!;
 
     public string ConnectionString =>
-        $"Host={Host}:{Port};Username={Login};Password={Password};Database={DatabaseName}";
+        $"Host={Host};Port={Port};Username={Login};Password={Password};Database={DatabaseName}";
 }

@@ -1,4 +1,5 @@
 using EkaterinburgDesign.Guides.Api.Database;
+using EkaterinburgDesign.Guides.Api.Database.models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EkaterinburgDesign.Guides.Api.Controllers;
@@ -7,11 +8,11 @@ namespace EkaterinburgDesign.Guides.Api.Controllers;
 [Route("api/tree")]
 public class TreeController : ControllerBase
 {
-    private readonly PostgresDb postgresDb;
+    private readonly PostgresContextProvider postgresContextProvider;
 
-    public TreeController(PostgresDb postgresDb)
+    public TreeController(PostgresContextProvider postgresContextProvider)
     {
-        this.postgresDb = postgresDb;
+        this.postgresContextProvider = postgresContextProvider;
     }
 
     [HttpGet(Name = "GetPagesTree")]
@@ -19,13 +20,27 @@ public class TreeController : ControllerBase
     {
         try
         {
-            postgresDb.TestMethod();
+            return Ok(CreateEntity());
         }
         catch (Exception e)
         {
             return BadRequest(e.ToString());
         }
+    }
 
-        return Ok("YASSS");
+    private List<TestEntity> CreateEntity()
+    {
+        using var db = postgresContextProvider();
+
+        var test = new TestEntity
+        {
+            Data = new Random().NextInt64().ToString()
+        };
+
+        db.TestEntities.Add(test);
+
+        db.SaveChanges();
+        
+        return db.TestEntities.ToList();
     }
 }
