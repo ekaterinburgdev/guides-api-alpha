@@ -1,14 +1,22 @@
-﻿using EkaterinburgDesign.Guides.Api.ApplicationOptions;
-using EkaterinburgDesign.Guides.Api.Integrations.Postgres;
+﻿using EkaterinburgDesign.Guides.Api.Common.ApplicationOptions;
+using EkaterinburgDesign.Guides.Api.Common.Integrations.Notion;
+using EkaterinburgDesign.Guides.Api.Common.Integrations.Postgres;
 
 namespace EkaterinburgDesign.Guides.Api;
 
 public static class Startup
 {
+    public static void AddLogging(ILoggingBuilder builder)
+    {
+        builder.ClearProviders();
+        builder.AddConsole();
+    }
+    
     public static void ConfigureServices(IServiceCollection services) =>
         services
             .AddApplicationOptions()
             .AddPostgres()
+            .AddNotion()
             .AddEndpointsApiExplorer()
             .AddSwaggerGen()
             .AddControllers();
