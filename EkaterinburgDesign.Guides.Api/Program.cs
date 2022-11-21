@@ -1,13 +1,14 @@
 using EkaterinburgDesign.Guides.Api;
-using EkaterinburgDesign.Guides.Api.ApplicationOptions.EnvironmentVariables;
+using EkaterinburgDesign.Guides.Api.Common.ApplicationOptions.EnvironmentVariables;
 
 EnvironmentVariablesConfigurator.LoadVariables();
 
 var builder = WebApplication.CreateBuilder(args);
 
-Configuration.ConfigureServices(builder.Services);
+Startup.ConfigureServices(builder.Services);
+Startup.AddLogging(builder.Logging);
 
 var app = builder.Build();
-Configuration.ConfigureApplication(app);
+Startup.ConfigureApplication(app);
 
 app.Run();

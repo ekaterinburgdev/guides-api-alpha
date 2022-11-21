@@ -1,4 +1,4 @@
-﻿namespace EkaterinburgDesign.Guides.Api.ApplicationOptions.EnvironmentVariables;
+﻿namespace EkaterinburgDesign.Guides.Api.Common.ApplicationOptions.EnvironmentVariables;
 
 public static class EnvironmentVariablesConfigurator
 {

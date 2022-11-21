@@ -1,4 +1,7 @@
+using EkaterinburgDesign.Guides.Api.Common.ApplicationOptions;
 using EkaterinburgDesign.Guides.Api.Database;
+using EkaterinburgDesign.Guides.Api.Database.models;
+using EkaterinburgDesign.Guides.Api.Notion;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EkaterinburgDesign.Guides.Api.Controllers;
@@ -7,25 +10,46 @@ namespace EkaterinburgDesign.Guides.Api.Controllers;
 [Route("api/tree")]
 public class TreeController : ControllerBase
 {
-    private readonly PostgresDb postgresDb;
+    private readonly PostgresContextProvider postgresContextProvider;
+    private readonly INotionCacher notionCacher;
+    private readonly NotionCredentials notionCredentials;
 
-    public TreeController(PostgresDb postgresDb)
+    public TreeController(PostgresContextProvider postgresContextProvider, INotionCacher notionCacher,
+        NotionCredentials notionCredentials)
     {
-        this.postgresDb = postgresDb;
+        this.postgresContextProvider = postgresContextProvider;
+        this.notionCacher = notionCacher;
+        this.notionCredentials = notionCredentials;
     }
 
     [HttpGet(Name = "GetPagesTree")]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
         try
         {
-            postgresDb.TestMethod();
+            await notionCacher.CachePageAsync(notionCredentials.Pages.First().ToString());
+
+            return Ok(CreateEntity());
         }
         catch (Exception e)
         {
             return BadRequest(e.ToString());
         }
+    }
 
-        return Ok("YASSS");
+    private List<PageElement> CreateEntity()
+    {
+        using var db = postgresContextProvider();
+
+        var test = new PageElement
+        {
+            Content = new Random().NextInt64().ToString()
+        };
+
+        db.PageElements.Add(test);
+
+        db.SaveChanges();
+
+        return db.PageElements.ToList();
     }
 }
