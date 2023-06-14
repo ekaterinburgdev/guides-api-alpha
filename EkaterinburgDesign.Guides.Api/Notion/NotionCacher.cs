@@ -7,20 +7,20 @@ namespace EkaterinburgDesign.Guides.Api.Notion;
 
 public class NotionCacher : INotionCacher
 {
-    private readonly INotionClient notion;
-    private readonly IPageElementRepository pageElementRepository;
-    private readonly IPageTreeNodeRepository pageTreeNodeRepository;
-    private ILogger<NotionCacher> log;
+    private readonly INotionClient Notion;
+    private readonly IPageElementRepository PageElementRepository;
+    private readonly IPageTreeNodeRepository PageTreeNodeRepository;
+    private readonly ILogger<NotionCacher> Log;
 
     private const string RootPageUrl = "root";
 
     public NotionCacher(INotionClient notion, IPageElementRepository pageElementRepository,
         IPageTreeNodeRepository pageTreeNodeRepository, ILogger<NotionCacher> log)
     {
-        this.notion = notion;
-        this.pageElementRepository = pageElementRepository;
-        this.pageTreeNodeRepository = pageTreeNodeRepository;
-        this.log = log;
+        Notion = notion;
+        PageElementRepository = pageElementRepository;
+        PageTreeNodeRepository = pageTreeNodeRepository;
+        Log = log;
     }
 
     public async Task CachePageAsync(string pageId)
@@ -42,12 +42,12 @@ public class NotionCacher : INotionCacher
     {
         var context = new NodeCacheContext(data.Id);
 
-        var rootElement = await notion.Blocks.RetrieveAsync(data.Id);
+        var rootElement = await Notion.Blocks.RetrieveAsync(data.Id);
         var childElements = await CacheChildElementsAsync(data.Id, context);
 
-        var page = await pageElementRepository.SaveAsync(rootElement, childElements, 0);
+        var page = await PageElementRepository.SaveAsync(rootElement, childElements, 0);
 
-        var node = await pageTreeNodeRepository.SaveAsync(data, page);
+        var node = await PageTreeNodeRepository.SaveAsync(data, page);
 
         foreach (var childNode in context.ChildNodesData)
         {
@@ -59,14 +59,14 @@ public class NotionCacher : INotionCacher
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                Log.LogError(e.ToString());
             }
         }
     }
 
     private async Task<ICollection<PageElement>> CacheChildElementsAsync(string elementId, NodeCacheContext context)
     {
-        var pageChildren = await notion.Blocks.RetrieveChildrenAsync(elementId);
+        var pageChildren = await Notion.Blocks.RetrieveChildrenAsync(elementId);
         var result = new List<PageElement>();
 
         var i = 0;
@@ -83,7 +83,7 @@ public class NotionCacher : INotionCacher
                 ? await CacheChildElementsAsync(element.Id, context)
                 : null;
 
-            var pageElement = await pageElementRepository.SaveAsync(element, ownChildren, i);
+            var pageElement = await PageElementRepository.SaveAsync(element, ownChildren, i);
 
             result.Add(pageElement);
 
@@ -97,7 +97,7 @@ public class NotionCacher : INotionCacher
     {
         var queryParameters = new DatabasesQueryParameters();
 
-        var items = await notion.Databases.QueryAsync(notionDbId, queryParameters);
+        var items = await Notion.Databases.QueryAsync(notionDbId, queryParameters);
 
         foreach (var item in items.Results)
         {
