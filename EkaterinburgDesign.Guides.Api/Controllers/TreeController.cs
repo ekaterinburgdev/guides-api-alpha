@@ -3,6 +3,7 @@ using EkaterinburgDesign.Guides.Api.Database;
 using EkaterinburgDesign.Guides.Api.Database.models;
 using EkaterinburgDesign.Guides.Api.Notion;
 using Microsoft.AspNetCore.Mvc;
+using Notion.Client;
 
 namespace EkaterinburgDesign.Guides.Api.Controllers;
 
@@ -10,16 +11,18 @@ namespace EkaterinburgDesign.Guides.Api.Controllers;
 [Route("api/tree")]
 public class TreeController : ControllerBase
 {
-    private readonly PostgresContextProvider postgresContextProvider;
-    private readonly INotionCacher notionCacher;
-    private readonly NotionCredentials notionCredentials;
+    private readonly PostgresContextProvider PostgresContextProvider;
+    private readonly INotionCacher NotionCacher;
+    private readonly NotionCredentials NotionCredentials;
 
-    public TreeController(PostgresContextProvider postgresContextProvider, INotionCacher notionCacher,
+    public TreeController(
+        PostgresContextProvider postgresContextProvider,
+        INotionCacher notionCacher,
         NotionCredentials notionCredentials)
     {
-        this.postgresContextProvider = postgresContextProvider;
-        this.notionCacher = notionCacher;
-        this.notionCredentials = notionCredentials;
+        PostgresContextProvider = postgresContextProvider;
+        NotionCacher = notionCacher;
+        NotionCredentials = notionCredentials;
     }
 
     [HttpGet(Name = "GetPagesTree")]
@@ -27,7 +30,7 @@ public class TreeController : ControllerBase
     {
         try
         {
-            await notionCacher.CachePageAsync(notionCredentials.Pages.First().ToString());
+            await NotionCacher.CachePageAsync(NotionCredentials.Pages.First().ToString());
 
             return Ok(CreateEntity());
         }
@@ -39,7 +42,7 @@ public class TreeController : ControllerBase
 
     private List<PageElement> CreateEntity()
     {
-        using var db = postgresContextProvider();
+        using var db = PostgresContextProvider();
 
         var test = new PageElement
         {
@@ -47,7 +50,6 @@ public class TreeController : ControllerBase
         };
 
         db.PageElements.Add(test);
-
         db.SaveChanges();
 
         return db.PageElements.ToList();
